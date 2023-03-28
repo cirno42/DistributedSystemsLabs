@@ -22,8 +22,8 @@ public class HashController {
         return new CrackHashManagerResponse(requestId);
     }
 
-    @GetMapping("/status/{requestId}")
-    public CrackingStatusResponse getCrackingStatus(@PathVariable UUID requestId) {
+    @GetMapping("/status")
+    public CrackingStatusResponse getCrackingStatus(@RequestParam UUID requestId) {
         return managerService.getStatus(requestId);
     }
 }

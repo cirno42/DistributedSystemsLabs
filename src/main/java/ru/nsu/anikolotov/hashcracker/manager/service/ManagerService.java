@@ -2,7 +2,6 @@ package ru.nsu.anikolotov.hashcracker.manager.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import ru.nsu.anikolotov.hashcracker.manager.dto.CrackHashManagerRequest;
@@ -32,9 +31,6 @@ public class ManagerService {
     @Value("${hashcracker.worker-address}")
     private String workerAddress;
 
-    @Value("${hashcracker.workers-amount}")
-    private Integer workersAmount;
-
     @Value("${hashcracker.worker-timeout}")
     private Long workerTimeoutInMillis;
 
@@ -51,10 +47,12 @@ public class ManagerService {
         UUID requestId = UUID.fromString(response.getRequestId());
         var currentStatus = statuses.get(requestId);
         if (CrackingStatus.IN_PROGRESS.equals(currentStatus.getStatus())) {
-            currentStatus.setStatus(CrackingStatus.READY);
-            currentStatus.setData(response.getAnswers().getWords());
-        } else if (CrackingStatus.READY.equals(currentStatus.getStatus())) {
-            currentStatus.getData().addAll(response.getAnswers().getWords());
+            if (currentStatus.getData() == null) {
+                currentStatus.setStatus(CrackingStatus.READY);
+                currentStatus.setData(response.getAnswers().getWords());
+            } else {
+                currentStatus.getData().addAll(response.getAnswers().getWords());
+            }
         }
     }
 
